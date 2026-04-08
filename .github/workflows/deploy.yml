@@ -3,7 +3,7 @@ name: Deploy FastAPI to EC2
 on:
   push:
     branches:
-      - main   # trigger when code pushed to main
+      - main
 
 jobs:
   deploy:
@@ -11,18 +11,18 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: SSH into EC2 and Deploy
+      - name: Deploy to EC2
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd yogesh/git_practice
+            cd fastapi/git_practice
             git pull origin main
-            source venv/bin/activate
+            source ../venv/bin/activate
             pip install -r requirements.txt
-            pkill -f uvicorn
+            pkill -f uvicorn || true
             nohup uvicorn main:app --host 0.0.0.0 --port 8000 &
