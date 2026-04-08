@@ -19,6 +19,8 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          debug: true  
           script: |
             cd fastapi/git_practice
             git pull origin main
