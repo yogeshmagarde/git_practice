@@ -22,23 +22,38 @@ jobs:
           port: 22
           debug: true
           script: |
+            set -e   # stop on error
+
             echo "🚀 Starting deployment..."
 
-            cd fastapi/git_practice
+            cd /home/ubuntu/fastapi/git_practice
 
-            echo "📥 Pulling latest code..."
-            git pull origin main
+            echo "📥 Fetching latest code..."
+            git fetch origin
+
+            echo "🔄 Resetting to latest commit..."
+            git reset --hard origin/main
+
+            echo "🧹 Cleaning unwanted files..."
+            git clean -fd
 
             echo "🐍 Activating virtual environment..."
-            source ../venv/bin/activate
+            source /home/ubuntu/fastapi/venv/bin/activate
 
             echo "📦 Installing dependencies..."
+            pip install --upgrade pip
             pip install -r requirements.txt
 
-            echo "🛑 Stopping old app (port 8000)..."
+            echo "🛑 Killing old process on port 8000..."
             fuser -k 8000/tcp || true
+
+            echo "⏳ Waiting for port to free..."
+            sleep 2
 
             echo "▶️ Starting FastAPI app..."
             nohup uvicorn main:app --host 0.0.0.0 --port 8000 > app.log 2>&1 &
 
             echo "✅ Deployment completed!"
+
+            echo "📌 Running process check:"
+            ps aux | grep uvicorn
