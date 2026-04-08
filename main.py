@@ -5,6 +5,6 @@ app = FastAPI()
 @app.get("/")
 def read_root():
     return {
-        "message": "Hello user, you have successfully deployed Ankit",
+        "message": "Hello user, you have successfully deployed",
         "current_time": time.time()
     }
