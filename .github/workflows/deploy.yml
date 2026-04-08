@@ -20,11 +20,25 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
-          debug: true  
+          debug: true
           script: |
+            echo "🚀 Starting deployment..."
+
             cd fastapi/git_practice
+
+            echo "📥 Pulling latest code..."
             git pull origin main
+
+            echo "🐍 Activating virtual environment..."
             source ../venv/bin/activate
+
+            echo "📦 Installing dependencies..."
             pip install -r requirements.txt
-            pkill -f "uvicorn main:app" || true
+
+            echo "🛑 Stopping old app (port 8000)..."
+            fuser -k 8000/tcp || true
+
+            echo "▶️ Starting FastAPI app..."
             nohup uvicorn main:app --host 0.0.0.0 --port 8000 > app.log 2>&1 &
+
+            echo "✅ Deployment completed!"
